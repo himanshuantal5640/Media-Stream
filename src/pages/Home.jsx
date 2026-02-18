@@ -3,7 +3,6 @@
 // import ShimmerCard from '../components/ShimmerCard'
 // import Pagination from '../components/Pagination';
 
-
 // export default function Home() {
 //   const [videos, setVideos] = useState([]);
 //   const [loading, setLoading] = useState(true);
@@ -17,11 +16,11 @@
 //     async function fetchVideos() {
 //       setLoading(true);
 //       setError(null);
-    
+
 //       try {
 //         const API_KEY = import.meta.env.VITE_VIDEO_API_KEY;
 //         const searchQuery = activeCategory === 'All' ? 'trending' : activeCategory;
-        
+
 //         const response = await fetch(
 //           `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=24&q=${searchQuery}&type=video&key=${API_KEY}`
 //         );
@@ -39,7 +38,7 @@
 //         setLoading(false);
 //       }
 //     }
-    
+
 //     fetchVideos();
 //   }, [activeCategory]);
 
@@ -111,7 +110,6 @@
 //   )
 // }
 
-
 import React, { useState, useEffect } from "react";
 import VideoCard from "../components/VideoCard";
 import ShimmerCard from "../components/ShimmerCard";
@@ -124,15 +122,26 @@ export default function Home() {
   const [activeCategory, setActiveCategory] = useState("All");
 
   // Pagination
+  const [pageHistory, setPageHistory] = useState([""]);
+
   const [nextPageToken, setNextPageToken] = useState(null);
   const [prevPageToken, setPrevPageToken] = useState(null);
   const [pageToken, setPageToken] = useState("");
 
-  const categories = ["All", "Music", "Gaming", "News", "Live", "Sports", "Learning"];
+  const categories = [
+    "All",
+    "Music",
+    "Gaming",
+    "News",
+    "Live",
+    "Sports",
+    "Learning",
+  ];
 
   // Reset page when category changes
   useEffect(() => {
     setPageToken("");
+    setPageHistory([""]);
   }, [activeCategory]);
 
   useEffect(() => {
@@ -147,7 +156,8 @@ export default function Home() {
           throw new Error("API key missing in .env file");
         }
 
-        const searchQuery = activeCategory === "All" ? "trending videos india" : activeCategory;
+        const searchQuery =
+          activeCategory === "All" ? "trending videos india" : activeCategory;
 
         const url = new URL("https://www.googleapis.com/youtube/v3/search");
         url.searchParams.set("part", "snippet");
@@ -184,7 +194,6 @@ export default function Home() {
 
   return (
     <div className="text-black dark:text-white">
-
       {/* Categories */}
       <div className="mb-6 flex gap-3 overflow-x-auto pb-2">
         {categories.map((category) => (
@@ -238,7 +247,10 @@ export default function Home() {
           <Pagination
             nextPageToken={nextPageToken}
             prevPageToken={prevPageToken}
+            pageToken={pageToken}
             setPageToken={setPageToken}
+            pageHistory={pageHistory}
+            setPageHistory={setPageHistory}
             loading={loading}
           />
         </>

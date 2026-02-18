@@ -1,29 +1,35 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 
 export default function Pagination({
   nextPageToken,
   prevPageToken,
+  pageToken,
   setPageToken,
+  pageHistory,
+  setPageHistory,
   loading,
 }) {
-  const [page, setPage] = useState(1);
 
-  // Reset when new category loads (no prev token = first page)
-  useEffect(() => {
-    if (!prevPageToken) setPage(1);
-  }, [prevPageToken]);
+  const currentPage = pageHistory.length;
 
   const handleNext = () => {
     if (!nextPageToken || loading) return;
+
     setPageToken(nextPageToken);
-    setPage((p) => p + 1);
+    setPageHistory(prev => [...prev, nextPageToken]);
+
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handlePrev = () => {
-    if (!prevPageToken || loading) return;
-    setPageToken(prevPageToken);
-    setPage((p) => Math.max(1, p - 1));
+    if (pageHistory.length <= 1 || loading) return;
+
+    const newHistory = [...pageHistory];
+    newHistory.pop();
+
+    setPageHistory(newHistory);
+    setPageToken(newHistory[newHistory.length - 1]);
+
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -33,7 +39,7 @@ export default function Pagination({
       {/* Previous */}
       <button
         onClick={handlePrev}
-        disabled={!prevPageToken || loading}
+        disabled={pageHistory.length <= 1 || loading}
         className="px-5 py-2 rounded-lg font-medium bg-gray-200 dark:bg-gray-800 
                    hover:bg-gray-300 dark:hover:bg-gray-700 
                    disabled:opacity-40 disabled:cursor-not-allowed transition"
@@ -43,7 +49,7 @@ export default function Pagination({
 
       {/* Page Number */}
       <div className="px-4 py-2 rounded-lg bg-gray-900 text-white dark:bg-white dark:text-black font-semibold text-lg">
-        {page}
+        {currentPage}
       </div>
 
       {/* Next */}
